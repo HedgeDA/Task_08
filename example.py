@@ -1,9 +1,11 @@
 import os
 import requests
 
-#API_KEY = 'trnsl.1.1.20161025T233221Z.47834a66fd7895d0.a95fd4bfde5c1794fa433453956bd261eae80152'
+
+# API_KEY = 'trnsl.1.1.20161025T233221Z.47834a66fd7895d0.a95fd4bfde5c1794fa433453956bd261eae80152'
 API_KEY = 'trnsl.1.1.20180801T160940Z.cb1c7bacc53f5e1c.6222e7c1ec7a313b9a1f9952f5339605b7d9257f'
 URL = 'https://translate.yandex.net/api/v1.5/tr.json/translate'
+
 
 def translate_it(text, from_lang, to_lang='ru'):
     """
