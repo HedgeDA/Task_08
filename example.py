@@ -1,4 +1,6 @@
 import os
+from builtins import OSError
+
 import requests
 
 
@@ -34,17 +36,24 @@ def translate_it(text, from_lang, to_lang='ru'):
 
 
 def read_file(path):
-    with open(path) as f:
-        text = f.read()
-
-    return text
+    try:
+        with open(path) as f:
+            text = f.read()
+            return text
+    except OSError:
+        print('Ошибка чтения файла! {}'.format(path))
+        return ''
 
 
 def write_file(path, text):
     # пытаемся записать результат перевода текста
-    with open(path, mode='w') as f:
-        f.write(text)
-
+    try:
+        with open(path, mode='w') as f:
+            f.write(text)
+        return True # успешное сохранение файла
+    except OSError:
+        print('Ошибка записи файла! {}'.format(path))
+        return False # не успешное сохранение файла
 
 def main():
     # определяем текущую дерикторию
@@ -74,13 +83,18 @@ def main():
         # пытаемся прочитать текст из файла
         text = read_file(original_file)
 
+        # ошибка чтения файла
+        if not text:
+            continue
+
         # пытаемся выполнить перевод текста
         result = translate_it(text, file_name.lower())
 
         # вызываем функцию перевода файла
-        write_file(result_file, result)
+        result = write_file(result_file, result)
 
-        print('Результат перевода сохранен в файл: {}'.format(result_file))
+        if result:
+            print('Результат перевода сохранен в файл: {}'.format(result_file))
 
         print('')
 
