@@ -33,31 +33,17 @@ def translate_it(text, from_lang, to_lang='ru'):
     return ''.join(json_['text'])
 
 
-def translate_file(original_file, result_file, from_lang, to_lang='ru'):
-    # пытаемся прочитать текст из файла
-    try:
-        with open(original_file) as f:
-            text = f.read()
-    except OSError:
-        print('Ошибка чтения файла: {}'.format(result_file))
-        return
+def read_file(path):
+    with open(path) as f:
+        text = f.read()
 
-    print('Перевод файла... {}'.format(result_file))
+    return text
 
-    # пытаемся выполнить перевод текста
-    try:
-        result = translate_it(text, from_lang, to_lang)
-    except OSError:
-        print('Ошибка перевода файла!')
-        return
 
+def write_file(path, text):
     # пытаемся записать результат перевода текста
-    try:
-        with open(result_file, mode='w') as f:
-            f.write(result)
-        print('Результат перевода сохранен в файл: {}'.format(result_file))
-    except OSError:
-        print('Ошибка записи файла: {}'.format(result_file))
+    with open(path, mode='w') as f:
+        f.write(text)
 
 
 def main():
@@ -72,21 +58,33 @@ def main():
         if os.path.isdir(path):
             continue
 
-        # разделяем имя файла и расширение
-        file_name, file_extension = os.path.splitext(path)
-
         # обрабатываем только файлы txt
-        if file_extension.lower() != '.txt':
+        if not path.endswith('.txt'):
             continue
+
+        # разделяем на имя файла и расширение, для формирования имени результирующего файла
+        file_name, file_extension = os.path.splitext(path)
 
         # построим пути читаемого и сохраняемого файла
         original_file = os.path.join(current_dir, path)
         result_file = os.path.join(current_dir, file_name + '_result' + file_extension)
 
+        print('Переводим файл {}...'.format(original_file))
+
+        # пытаемся прочитать текст из файла
+        text = read_file(original_file)
+
+        # пытаемся выполнить перевод текста
+        result = translate_it(text, file_name.lower())
+
         # вызываем функцию перевода файла
-        translate_file(original_file, result_file, file_name.lower())
+        write_file(result_file, result)
+
+        print('Результат перевода сохранен в файл: {}'.format(result_file))
 
         print('')
+
+    print('Перевод файлов завершен')
 
 
 if __name__ == '__main__':
